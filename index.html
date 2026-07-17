@@ -740,6 +740,7 @@ Designed and implemented a console-based generative AI chat application using th
   </div>
 </section>
 
+
 <!-- CONTACT -->
 <section id="contact">
   <div class="container contact-wrap">
@@ -753,7 +754,7 @@ Designed and implemented a console-based generative AI chat application using th
         <a href="mailto:mabucardosbusiso@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
       </div>
     </div>
-
+ 
     <div class="contact-form reveal">
       <form id="contactForm">
         <div class="form-group">
@@ -768,20 +769,23 @@ Designed and implemented a console-based generative AI chat application using th
           <label for="message">MESSAGE</label>
           <textarea id="message" name="message" placeholder="> type your message..." required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send message</button>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button type="submit" data-channel="email" class="btn btn-primary" style="flex:1;justify-content:center;min-width:150px;"><i class="fas fa-envelope"></i>&nbsp;Send via Email</button>
+          <button type="submit" data-channel="whatsapp" class="btn btn-ghost" style="flex:1;justify-content:center;min-width:150px;"><i class="fab fa-whatsapp"></i>&nbsp;Send via WhatsApp</button>
+        </div>
       </form>
     </div>
   </div>
 </section>
-
+ 
 <footer>
   &copy; 2026 Sibusiso Mbatha. All rights reserved.
 </footer>
-
+ 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+ 
   // smooth nav scroll
   document.querySelectorAll('nav a').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
@@ -790,7 +794,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target) window.scrollTo({ top: target.offsetTop - 60, behavior: reduceMotion ? 'auto' : 'smooth' });
     });
   });
-
+ 
   // scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && !reduceMotion) {
@@ -806,18 +810,18 @@ document.addEventListener('DOMContentLoaded', function () {
   } else {
     revealEls.forEach(function (el) { el.classList.add('in'); });
   }
-
+ 
   // hero terminal typewriter
   const typedEl = document.getElementById('typed-line');
   const resultEl = document.getElementById('query-result');
   const query = "SELECT name, role, stack\nFROM engineers\nWHERE location = 'Gauteng, ZA';";
-
+ 
   function renderQuery(text) {
     return text
       .replace(/SELECT|FROM|WHERE/g, '<span class="kw">$&</span>')
-      .replace(/'KwaZulu-Natal, ZA'/g, '<span class="str">$&</span>');
+      .replace(/'Gauteng, ZA'/g, '<span class="str">$&</span>');
   }
-
+ 
   if (typedEl) {
     if (reduceMotion) {
       typedEl.innerHTML = renderQuery(query);
@@ -837,24 +841,41 @@ document.addEventListener('DOMContentLoaded', function () {
       setTimeout(type, 500);
     }
   }
-
-  // contact form (front-end only)
+ 
+  // contact form -> routes to Email or WhatsApp, no backend required
+  const CONTACT_EMAIL = 'mabucardosbusiso@gmail.com';
+  const WHATSAPP_NUMBER = '27769250037';
+ 
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        message: document.getElementById('message').value
-      };
-      console.log('Form submitted:', formData);
-      alert('Thank you for your message! I will get back to you soon.');
-      contactForm.reset();
+    const channelButtons = contactForm.querySelectorAll('button[data-channel]');
+ 
+    channelButtons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+ 
+        if (!contactForm.reportValidity()) return;
+ 
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const channel = btn.getAttribute('data-channel');
+ 
+        if (channel === 'email') {
+          const subject = 'Portfolio contact from ' + name;
+          const body = message + '\n\n— ' + name + ' (' + email + ')';
+          window.location.href = 'mailto:' + CONTACT_EMAIL
+            + '?subject=' + encodeURIComponent(subject)
+            + '&body=' + encodeURIComponent(body);
+        } else if (channel === 'whatsapp') {
+          const text = 'Hi Sibusiso, my name is ' + name + ' (' + email + ').\n\n' + message;
+          window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text), '_blank');
+        }
+      });
     });
   }
 });
 </script>
-
+ 
 </body>
 </html>
